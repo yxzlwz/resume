@@ -1,0 +1,586 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin=""
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          /* ── tokens ─────────────────────────────────────────────
+             --ink / --muted / --rule / --soft / --paperFade are
+             re-declared inline on .page by renderVals() on every
+             theme change; the values here are the light defaults. */
+          :root {
+            --accent: oklch(0.62 0.13 330);
+            --accent-soft: oklch(0.62 0.13 330 / 0.25);
+            --serif: "Source Serif 4", Georgia, serif;
+            --mono: "IBM Plex Mono", monospace;
+
+            --ink: #15181c;
+            --muted: #5b6169;
+            --rule: rgba(21, 24, 28, 0.14);
+            --soft: rgba(21, 24, 28, 0.03);
+            --paperFade: rgba(247, 248, 249, 0.7);
+          }
+
+          /* ── base ──────────────────────────────────────────── */
+          html {
+            scroll-behavior: smooth;
+          }
+          body {
+            margin: 0;
+            background: #f7f8f9;
+          }
+          a {
+            color: inherit;
+            text-decoration: none;
+          }
+          ::selection {
+            background: var(--accent-soft);
+          }
+
+          /* ── shell ─────────────────────────────────────────── */
+          .page {
+            min-height: 100vh;
+            font-family: var(--serif);
+            font-size: 17px;
+            line-height: 1.6;
+            transition:
+              background 0.35s ease,
+              color 0.35s ease;
+          }
+          .wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: clamp(28px, 5vw, 64px) clamp(20px, 5vw, 56px) 96px;
+            box-sizing: border-box;
+          }
+
+          /* ── header ────────────────────────────────────────── */
+          .page header {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            padding: clamp(56px, 10vw, 120px) 0 clamp(40px, 7vw, 72px);
+          }
+          .identity {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+          }
+          .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex: none;
+          }
+          .page h1 {
+            margin: 0;
+            font-size: clamp(44px, 9vw, 86px);
+            font-weight: 300;
+            letter-spacing: -0.03em;
+            line-height: 1.02;
+            text-wrap: balance;
+          }
+          .page h1 span {
+            color: var(--accent);
+          }
+          .lede {
+            margin: 0;
+            max-width: 34ch;
+            font-size: clamp(20px, 2.6vw, 27px);
+            line-height: 1.38;
+            font-weight: 300;
+            text-wrap: pretty;
+          }
+
+          /* Small mono caps — header meta, footer "get in touch". */
+          .eyebrow {
+            margin: 0;
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+          }
+
+          .theme-toggle {
+            margin-left: auto;
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--rule);
+            border-radius: 50%;
+            background: var(--paperFade);
+            color: var(--muted);
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+          }
+          .theme-toggle:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+          }
+
+          /* ── sections ──────────────────────────────────────── */
+          .page section {
+            display: flex;
+            flex-direction: column;
+            padding-top: clamp(56px, 9vw, 104px);
+          }
+          /* first section — the header already supplies the gap */
+          .page #work {
+            padding-top: 16px;
+          }
+          .page section > h2 {
+            margin: 0 0 22px;
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+          }
+
+          /* ── list rows — work, awards, education ───────────── */
+          .row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6px 24px;
+            align-items: baseline;
+            padding: 22px 0;
+            border-top: 1px solid var(--rule);
+          }
+          /* closes a list off with a rule under its final entry */
+          .row-end {
+            border-bottom: 1px solid var(--rule);
+          }
+          a.row:hover {
+            background: var(--soft);
+          }
+          .row > h3 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+          }
+          .row > span {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--muted);
+            white-space: nowrap;
+          }
+          .row > p {
+            margin: 0;
+            grid-column: 1 / -1;
+            max-width: 60ch;
+            color: var(--muted);
+          }
+          .row strong {
+            font-weight: 600;
+            color: var(--ink);
+          }
+
+          /* ── cards — writing ───────────────────────────────── */
+          .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+          }
+          .card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 24px;
+            border: 1px solid var(--rule);
+            border-radius: 3px;
+          }
+          .card:hover {
+            border-color: var(--accent);
+          }
+          .card > span {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+          }
+          .card > h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 400;
+          }
+          .card > p {
+            margin: 0;
+            color: var(--muted);
+          }
+
+          /* ── tag wall — stack ──────────────────────────────── */
+          .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            font-family: var(--mono);
+            font-size: 12px;
+          }
+          .tags span {
+            padding: 3px 10px;
+            border: 1px solid var(--rule);
+            border-radius: 99px;
+          }
+
+          /* ── footer ────────────────────────────────────────── */
+          .page footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 28px;
+            margin-top: clamp(64px, 10vw, 120px);
+            padding-top: 28px;
+            border-top: 1px solid var(--rule);
+          }
+          .contact {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .contact a {
+            font-family: var(--mono);
+            font-size: 17px;
+            letter-spacing: -0.01em;
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: 2px;
+            align-self: flex-start;
+          }
+          .contact a:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+          }
+          .social {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--muted);
+          }
+          .social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--rule);
+            border-radius: 50%;
+            opacity: 0.75;
+          }
+          .social a:hover {
+            opacity: 1;
+            border-color: var(--accent);
+          }
+        </style>
+      </helmet>
+
+      <div
+        class="page"
+        style="background:{{ paper }};color:{{ ink }};--ink:{{ ink }};--muted:{{ muted }};--rule:{{ rule }};--soft:{{ soft }};--paperFade:{{ paperFade }}"
+      >
+        <div class="wrap">
+          <header>
+            <div class="identity">
+              <img
+                class="avatar"
+                src="https://yxzl.dev/head.png"
+                alt="Danny Wang"
+              />
+              <p class="eyebrow">Shanghai · UTC+8</p>
+              <button
+                class="theme-toggle"
+                type="button"
+                onClick="{{ cycleTheme }}"
+                title="{{ themeTitle }}"
+              >
+                <sc-if value="{{ isSun }}" hint-placeholder-val="{{ true }}">
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  >
+                    <circle cx="12" cy="12" r="4.2"></circle>
+                    <line x1="12" y1="2" x2="12" y2="4.6"></line>
+                    <line x1="12" y1="19.4" x2="12" y2="22"></line>
+                    <line x1="2" y1="12" x2="4.6" y2="12"></line>
+                    <line x1="19.4" y1="12" x2="22" y2="12"></line>
+                    <line x1="4.9" y1="4.9" x2="6.8" y2="6.8"></line>
+                    <line x1="17.2" y1="17.2" x2="19.1" y2="19.1"></line>
+                    <line x1="19.1" y1="4.9" x2="17.2" y2="6.8"></line>
+                    <line x1="6.8" y1="17.2" x2="4.9" y2="19.1"></line>
+                  </svg>
+                </sc-if>
+                <sc-if value="{{ isMoon }}" hint-placeholder-val="{{ false }}">
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"
+                    ></path>
+                  </svg>
+                </sc-if>
+                <sc-if
+                  value="{{ isSystem }}"
+                  hint-placeholder-val="{{ false }}"
+                >
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  >
+                    <rect x="2.5" y="4" width="19" height="13" rx="1.6"></rect>
+                    <line x1="8.5" y1="20.5" x2="15.5" y2="20.5"></line>
+                  </svg>
+                </sc-if>
+              </button>
+            </div>
+
+            <h1>Danny Wang<span>.</span></h1>
+            <p class="lede">Major in Computer Science. Full-stack developer.</p>
+            <!-- <p class="eyebrow">全栈开发 · Python + Vue</p> -->
+          </header>
+
+          <section id="work">
+            <h2>Selected works / 项目</h2>
+
+            <a class="row" href="https://arxiv.org/abs/2608.29387">
+              <h3>
+                EvoGenUI-Bench: Evaluating LLMs as Multi-Turn Generative UI
+                Assistants
+              </h3>
+              <span>EMNLP 2026</span>
+              <p>
+                Yue Peng, Lanke Xia, <strong>Zihan Wang</strong>, Jiahao Ye, Ke
+                Ning, Hongyi Wen.
+              </p>
+            </a>
+
+            <a class="row" href="https://github.com/yxzlwz/cloudreve-sdk">
+              <h3>Cloudreve SDK</h3>
+              <span>Python · 38 ★</span>
+              <p>
+                Python SDK for the Cloudreve V3 and V4 APIs. Used by other
+                developers to script against self-hosted Cloudreve storage.
+              </p>
+            </a>
+
+            <a class="row" href="https://github.com/genuine-oj">
+              <h3>Genuine OJ</h3>
+              <span>Vue · Django</span>
+              <p>An open-source online programming judge.</p>
+            </a>
+          </section>
+
+          <section id="awards">
+            <h2>Awards / 获奖</h2>
+
+            <div class="row">
+              <h3>RoboMaster 机甲大师</h3>
+              <!-- <span> 2026 </span> -->
+              <p>Third Prize (University League 3v3, 2026 Jiangsu)</p>
+            </div>
+
+            <div class="row row-end">
+              <h3>Mathematical Contest in Modeling (MCM)</h3>
+              <!-- <span> 2026 </span> -->
+              <p>Meritorious Winner, 2026</p>
+            </div>
+          </section>
+
+          <section id="writing">
+            <h2>Writing / 写作</h2>
+
+            <div class="cards">
+              <a class="card" href="https://yxzl.dev/">
+                <span>Blog</span>
+                <h3>异想之旅のBlog</h3>
+                <p>Engineering notes &amp; essays</p>
+              </a>
+
+              <a class="card" href="https://docs.yxzl.dev/">
+                <span>Docs</span>
+                <h3>技术文档</h3>
+                <p>
+                  A guide for new computer science students. Written and
+                  maintained with Qingdao Academy alumni.
+                </p>
+              </a>
+            </div>
+          </section>
+
+          <section id="education">
+            <h2>Education / 教育</h2>
+
+            <div class="row">
+              <h3>New York University Shanghai</h3>
+              <span>2025—2029 · Shanghai</span>
+            </div>
+
+            <div class="row row-end">
+              <h3>Qingdao Academy 青岛中学</h3>
+              <span>2021—2025 · Qingdao</span>
+            </div>
+          </section>
+
+          <section id="stack">
+            <h2>Stack / 技术栈</h2>
+
+            <div class="tags">
+              <span>Python</span>
+              <span>Vue</span>
+              <span>JavaScript</span>
+              <span>HTML / CSS</span>
+              <span>Git</span>
+              <span>Linux</span>
+            </div>
+          </section>
+
+          <footer>
+            <div class="contact">
+              <p class="eyebrow">Get in touch</p>
+              <a
+                href="mailto:i@yxzl.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                >i@yxzl.dev</a
+              >
+            </div>
+
+            <div class="social">
+              <a
+                href="https://github.com/yxzlwz"
+                title="GitHub"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://cdn.simpleicons.org/github/{{ iconHex }}"
+                  alt="GitHub"
+                  width="17"
+                  height="17"
+                />
+              </a>
+              <a
+                href="https://x.com/yxzlwz"
+                title="X"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://cdn.simpleicons.org/x/{{ iconHex }}"
+                  alt="X"
+                  width="15"
+                  height="15"
+                />
+              </a>
+              <a
+                href="https://yxzl.dev"
+                title="Blog"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <ellipse cx="12" cy="12" rx="4" ry="9"></ellipse>
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                </svg>
+              </a>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </x-dc>
+
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"$preview":{"width":1000}}'
+    >
+      class Component extends DCLogic {
+        state = { mode: 'system', systemDark: false };
+        componentDidMount() {
+          try {
+            const mq = window.matchMedia('(prefers-color-scheme: dark)');
+            this.mq = mq;
+            this.onMq = e => this.setState({ systemDark: e.matches });
+            mq.addEventListener('change', this.onMq);
+            const saved = localStorage.getItem('yxzl-site-theme');
+            this.setState({ systemDark: mq.matches, mode: saved === 'light' || saved === 'dark' ? saved : 'system' });
+          } catch (e) {}
+        }
+        componentWillUnmount() {
+          try { this.mq.removeEventListener('change', this.onMq); } catch (e) {}
+        }
+        cycle = () => {
+          this.setState(s => {
+            const next = s.mode === 'system' ? 'light' : s.mode === 'light' ? 'dark' : 'system';
+            try { localStorage.setItem('yxzl-site-theme', next); } catch (e) {}
+            return { mode: next };
+          });
+        };
+        renderVals() {
+          const mode = this.state.mode;
+          const dark = mode === 'dark' || (mode === 'system' && this.state.systemDark);
+          try { document.body.style.background = dark ? '#111417' : '#f7f8f9'; } catch (e) {}
+          return {
+            cycleTheme: this.cycle,
+            isSystem: mode === 'system',
+            isSun: mode === 'light',
+            isMoon: mode === 'dark',
+            themeTitle: mode === 'system' ? 'Theme: follow system' : mode === 'light' ? 'Theme: light' : 'Theme: dark',
+            paperFade: dark ? 'rgba(17,20,23,.7)' : 'rgba(247,248,249,.7)',
+            paper: dark ? '#111417' : '#f7f8f9',
+            ink: dark ? '#e9ecef' : '#15181c',
+            muted: dark ? '#949ca5' : '#5b6169',
+            rule: dark ? 'rgba(233,236,239,.18)' : 'rgba(21,24,28,.14)',
+            soft: dark ? 'rgba(233,236,239,.05)' : 'rgba(21,24,28,.03)',
+            iconHex: dark ? '949ca5' : '5b6169',
+          };
+        }
+      }
+    </script>
+  </body>
+</html>
